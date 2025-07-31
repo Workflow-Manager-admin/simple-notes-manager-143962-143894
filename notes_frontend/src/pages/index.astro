@@ -1,11 +1,49 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import NotesSidebar from '../components/NotesSidebar.astro';
+import NotesTopBar from '../components/NotesTopBar.astro';
+import NotesMainPane from '../components/NotesMainPane.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+/**
+ * Notes page entrypoint - minimal single page, all logic in browser.
+ * Implements create/view/edit/delete/search/tag features, color scheme, responsive.
+ */
+
+// Minimal JS-only single-page logic (astro island)
 ---
 
 <Layout>
-	<Welcome />
+  <div id="notes-app">
+    <NotesSidebar />
+    <div class="notes-main-column">
+      <NotesTopBar />
+      <NotesMainPane />
+    </div>
+  </div>
+  <script type="module" src="/notes.js"></script>
 </Layout>
+
+<style>
+#notes-app {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+}
+.notes-main-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100vh;
+}
+
+@media (max-width: 600px) {
+  #notes-app {
+    flex-direction: column;
+  }
+  .notes-main-column {
+    min-height: 0;
+    height: auto;
+  }
+}
+</style>

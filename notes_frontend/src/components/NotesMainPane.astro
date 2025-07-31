@@ -1,0 +1,121 @@
+---
+/**
+ * NotesMainPane.astro
+ * Displays or edits note content
+ * Props:
+ *   note: note object (null if none selected)
+ *   editing: bool, true if in edit mode
+ *   onTitleChange: (s: string) => void
+ *   onContentChange: (s: string) => void
+ */
+const {
+  note = null,
+  editing = false,
+  onTitleChange = () => {},
+  onContentChange = () => {},
+} = Astro.props;
+---
+
+<main class="main-pane">
+  {note == null ? (
+    <section class="empty-state">
+      <div>No note selected.</div>
+      <div>Select or create a note to get started!</div>
+    </section>
+  ) : (
+    <form spellcheck="true" autocomplete="off" class="note-form">
+      <input
+        class="note-title-input"
+        type="text"
+        placeholder="Title"
+        value={note.title}
+        onInput={e => editing && onTitleChange(e.target.value)}
+        disabled={!editing}
+        maxLength={60}
+        required
+        aria-label="Note Title"
+      />
+      <textarea
+        class="note-content-input"
+        rows={15}
+        placeholder="Write your note here..."
+        value={note.content}
+        onInput={e => editing && onContentChange(e.target.value)}
+        disabled={!editing}
+        aria-label="Note Content"
+      />
+    </form>
+  )}
+</main>
+
+<style>
+.main-pane {
+  flex: 1;
+  min-width: 0;
+  max-width: 100vw;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-color);
+}
+
+.note-form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 2em 2em 1.5em 2em;
+  gap: 1.2em;
+}
+
+.note-title-input {
+  font-size: 1.56em;
+  font-weight: bold;
+  padding: 0.3em 0.6em;
+  border-radius: 7px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-color);
+}
+.note-title-input[disabled] {
+  background: #f5f8fa;
+  color: #616161;
+  border: 1.5px solid #ececec;
+}
+
+.note-content-input {
+  font-size: 1.06em;
+  font-family: inherit;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1em 1em;
+  min-height: 320px;
+  background: var(--card-bg);
+  color: var(--text-color);
+  resize: vertical;
+}
+.note-content-input[disabled] {
+  background: #fbfbfc;
+  color: #757575;
+  border: 1px solid #ededed;
+}
+
+.empty-state {
+  margin: auto;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 1.14em;
+  opacity: 0.8;
+}
+
+/* Mobile styles */
+@media (max-width: 900px) {
+  .note-form {
+    padding: 1.2em 0.8em 0.8em 0.8em;
+  }
+}
+@media (max-width: 600px) {
+  .main-pane {
+    padding: 0 0 !important;
+  }
+}
+</style>
