@@ -1,0 +1,230 @@
+---
+/**
+ * NotesSidebar.astro
+ * Sidebar for displaying and searching/filtering the note list.
+ * Props:
+ *   notes: Array of all notes
+ *   activeNoteId: ID of the selected note
+ *   onSelectNote: Function to select a note
+ *   onCreateNote: Function to create a new note
+ *   searchValue: Current search string
+ *   onSearch: Function to update search string
+ *   tags: Array of all available tags
+ *   tagFilter: Currently active tag filter
+ *   onTagFilter: Function to update tag filter
+ */
+const {
+  notes = [],
+  activeNoteId = null,
+  onSelectNote = () => {},
+  onCreateNote = () => {},
+  searchValue = "",
+  onSearch = () => {},
+  tags = [],
+  tagFilter = "",
+  onTagFilter = () => {},
+} = Astro.props;
+---
+
+<aside class="notes-sidebar">
+  <div class="sidebar-actions">
+    <input
+      class="search-input"
+      type="text"
+      placeholder="Search notes..."
+      value={searchValue}
+      onInput={(e) => onSearch(e.target.value)}
+      aria-label="Search notes"
+    />
+    <button class="create-btn" title="Create new note" onClick={onCreateNote}>
+      +
+    </button>
+  </div>
+  <div class="tags-filter">
+    <button
+      class:active={tagFilter === ""}
+      onClick={() => onTagFilter("")}
+    >All</button>
+    {tags.map(tag => (
+      <button
+        class:active={tag === tagFilter}
+        onClick={() => onTagFilter(tag)}
+      >{tag}</button>
+    ))}
+  </div>
+  <ul class="note-list">
+    {notes.length === 0 && <li class="muted">No notes found</li>}
+    {notes.map((note) => (
+      <li
+        class={`note-item${note.id === activeNoteId ? " active" : ""}`}
+        onClick={() => onSelectNote(note.id)}
+      >
+        <div class="note-title">{note.title || <em>Untitled</em>}</div>
+        <div class="note-tags">{note.tags && note.tags.map(t => (
+          <span class="note-tag">{t}</span>
+        ))}</div>
+      </li>
+    ))}
+  </ul>
+</aside>
+
+<style>
+.notes-sidebar {
+  flex: 0 0 260px;
+  background: var(--card-bg);
+  border-right: 1px solid var(--border-color);
+  padding: 0;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-actions {
+  display: flex;
+  gap: 8px;
+  padding: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  border-radius: 5px;
+  font-size: 1em;
+  outline: none;
+  color: var(--text-color);
+}
+
+.create-btn {
+  background: #ffb300;
+  border: none;
+  color: white;
+  padding: 0.42rem 0.83rem;
+  border-radius: 8px;
+  font-size: 1.22em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.14s;
+  box-shadow: 0 2px 6px var(--shadow-color);
+}
+
+.create-btn:hover {
+  background: #ffa600;
+}
+
+.tags-filter {
+  display: flex;
+  gap: 0.5em;
+  padding: 0.5em 1em 0.5em 1em;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tags-filter button {
+  background: none;
+  border: none;
+  font-size: 0.93em;
+  border-radius: 4px;
+  color: #424242;
+  padding: 0.15em 0.7em;
+  cursor: pointer;
+  transition: background 0.13s;
+}
+.tags-filter button.active, .tags-filter button:focus {
+  background: #1976d2;
+  color: #fff;
+}
+
+.note-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.2em 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.note-item {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0.6em 1.2em;
+  border-left: 4px solid transparent;
+  transition: background 0.2s, border-color 0.2s;
+}
+.note-item.active {
+  background: #e3edfb;
+  border-left: 4px solid #1976d2;
+}
+.note-item:hover:not(.active) {
+  background: #f5f7fa;
+}
+.note-title {
+  font-size: 1.07em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.note-tags {
+  display: flex;
+  gap: 0.25em;
+  flex-wrap: wrap;
+}
+.note-tag {
+  font-size: 0.8em;
+  background: #ffecb3;
+  color: #b78000;
+  border-radius: 4px;
+  padding: 0.07em 0.5em;
+}
+.muted {
+  color: var(--text-secondary);
+  padding: 1em;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .notes-sidebar {
+    flex-basis: 170px;
+  }
+  .sidebar-actions {
+    padding: 0.7rem;
+  }
+}
+
+/* On mobile, sidebar collapses to top row */
+@media (max-width: 600px) {
+  .notes-sidebar {
+    flex-direction: row;
+    flex-basis: unset;
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    min-height: unset;
+    max-height: 80px;
+  }
+  .sidebar-actions, .tags-filter {
+    padding: 0.5em 0.5em 0 0.5em;
+  }
+  .note-list {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+  }
+  .note-item {
+    min-width: 120px;
+    padding: 0.6em 0.7em;
+    border-left: none;
+    border-top: 4px solid transparent;
+  }
+  .note-item.active {
+    background: #e3edfb;
+    border-top: 4px solid #1976d2;
+    border-left: none;
+  }
+}
+</style>

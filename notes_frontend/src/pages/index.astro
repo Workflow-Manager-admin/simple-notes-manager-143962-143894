@@ -1,0 +1,49 @@
+---
+import Layout from '../layouts/Layout.astro';
+import NotesSidebar from '../components/NotesSidebar.astro';
+import NotesTopBar from '../components/NotesTopBar.astro';
+import NotesMainPane from '../components/NotesMainPane.astro';
+
+/**
+ * Notes page entrypoint - minimal single page, all logic in browser.
+ * Implements create/view/edit/delete/search/tag features, color scheme, responsive.
+ */
+
+// Minimal JS-only single-page logic (astro island)
+---
+
+<Layout>
+  <div id="notes-app">
+    <NotesSidebar />
+    <div class="notes-main-column">
+      <NotesTopBar />
+      <NotesMainPane />
+    </div>
+  </div>
+  <script type="module" src="/notes.js"></script>
+</Layout>
+
+<style>
+#notes-app {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+}
+.notes-main-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100vh;
+}
+
+@media (max-width: 600px) {
+  #notes-app {
+    flex-direction: column;
+  }
+  .notes-main-column {
+    min-height: 0;
+    height: auto;
+  }
+}
+</style>
